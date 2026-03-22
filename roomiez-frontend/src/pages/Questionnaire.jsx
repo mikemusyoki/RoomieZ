@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProgressBar from "../components/ProgressBar";
 import QuestionCard from "../components/QuestionCard";
 import TipBox from "../components/TipBox";
+import api from "../api/axios";
+import toast from "react-hot-toast";
 
 const questions = [
-
   {
     id: "cleanliness",
     title: "How do you handle cleanliness?",
@@ -17,7 +19,6 @@ const questions = [
       { value: "organized-chaos", title: "Organized Chaos", desc: "Messy but I know where things are." }
     ]
   },
-
   {
     id: "sleepSchedule",
     title: "What is your sleep schedule?",
@@ -29,7 +30,6 @@ const questions = [
       { value: "flexible", title: "Flexible", desc: "My schedule changes often." }
     ]
   },
-
   {
     id: "socialLevel",
     title: "How often do you bring guests over?",
@@ -41,7 +41,6 @@ const questions = [
       { value: "private-sanctuary", title: "Private Space", desc: "Rarely invite people over." }
     ]
   },
-
   {
     id: "noiseTolerance",
     title: "What is your noise tolerance?",
@@ -53,7 +52,6 @@ const questions = [
       { value: "can-sleep-anywhere", title: "High Tolerance", desc: "Noise doesn't bother me." }
     ]
   },
-
   {
     id: "studyEnvironment",
     title: "Where do you usually study?",
@@ -65,7 +63,6 @@ const questions = [
       { value: "mix", title: "Mix", desc: "Depends on the day." }
     ]
   },
-
   {
     id: "sharingPolicy",
     title: "How do you feel about sharing items?",
@@ -77,7 +74,6 @@ const questions = [
       { value: "do-not-share", title: "Do Not Share", desc: "I prefer personal items." }
     ]
   },
-
   {
     id: "smoking",
     title: "Do you smoke or vape?",
@@ -88,7 +84,6 @@ const questions = [
       { value: false, title: "No", desc: "I do not smoke." }
     ]
   },
-
   {
     id: "introversion",
     title: "How would you describe your personality?",
@@ -100,91 +95,82 @@ const questions = [
       { value: "ambiverted", title: "Ambiverted", desc: "A balance of both." }
     ]
   }
-
 ];
 
 const Questionnaire = () => {
-
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const currentQuestion = questions[step];
   const selected = answers[currentQuestion.id];
 
-  const handleSelect = value => {
-    setAnswers({
-      ...answers,
-      [currentQuestion.id]: value
-    });
+  const handleSelect = (value) => {
+    setAnswers({ ...answers, [currentQuestion.id]: value });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await api.post("/questionnaire", answers);
+      toast.success("Questionnaire completed! Finding your matches...");
+      setTimeout(() => navigate("/matches"), 1000);
+    } catch (error) {
+      const msg = error.response?.data?.error || "Failed to submit questionnaire";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleNext = () => {
-    if (!selected) return;
+    if (selected === undefined || selected === null) return;
     if (step < questions.length - 1) setStep(step + 1);
-    else console.log("Submitting answers:", answers);
+    else handleSubmit();
   };
 
   const handlePrevious = () => {
     if (step > 0) setStep(step - 1);
   };
 
-  useEffect(() => {
-
-    const handleKey = e => {
-
-      if (e.key === "ArrowRight") handleNext();
-      if (e.key === "ArrowLeft") handlePrevious();
-
-    };
-
-    window.addEventListener("keydown", handleKey);
-
-    return () => window.removeEventListener("keydown", handleKey);
-
-  });
-
   return (
-
     <div style={{ background: "#FFFDF5", minHeight: "100vh" }}>
-
       <Navbar />
-
-      <div style={{ maxWidth: "800px", margin: "40px auto" }}>
-
-        <ProgressBar step={step + 1} total={questions.length} />
-
-        <QuestionCard
-          question={currentQuestion}
-          selected={selected}
-          setSelected={handleSelect}
-        />
-
-        <div className="button-row">
-
-          <button onClick={handlePrevious} disabled={step === 0}>
-            Previous
-          </button>
-
-          <button
-            onClick={handleNext}
-            className="primary-button"
-            disabled={!selected}
+      <main id="main-content" role="main">
+        <div style={{ maxWidth: "800px", margin: "40px auto", padding: "0 20px" }}>
+          <ProgressBar step={step + 1} total={questions.length} />
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleNext(); }}
           >
-
-            {step === questions.length - 1 ? "Finish" : "Next Question →"}
-
-          </button>
-
+            <QuestionCard question={currentQuestion} selected={selected} setSelected={handleSelect} />
+            <div className="button-row" role="toolbar">
+              <button onClick={handlePrevious} disabled={step === 0} type="button">
+                Previous
+              </button>
+              <button
+                onClick={handleNext}
+                className="primary-button"
+                disabled={(selected === undefined || selected === null) || loading}
+                type="button"
+              >
+                {loading ? "Submitting..." : step === questions.length - 1 ? "Finish" : "Next Question →"}
+              </button>
+            </div>
+            <TipBox tip={currentQuestion.tip} />
+          </form>
         </div>
-
-        <TipBox tip={currentQuestion.tip} />
-
-      </div>
-
+      </main>
     </div>
-
   );
-
 };
 
 export default Questionnaire;

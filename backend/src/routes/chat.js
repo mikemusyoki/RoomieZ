@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const Message = require('../models/Message');
-const Match = require('../models/Match');
 
 // Get all messages for a specific match
 router.get('/:matchId', auth, async (req, res) => {
   try {
-    // Security check: Ensure the user belongs to this match
-    const match = await Match.findById(req.params.matchId);
-    if (!match || !match.users.includes(req.user.userId)) {
+    // Security check: The matchId is a deterministic string "userId1_userId2"
+    // Verify the requesting user is one of the two participants
+    const participants = req.params.matchId.split('_');
+    if (!participants.includes(req.user.userId)) {
       return res.status(403).json({ error: "Unauthorized access to chat" });
     }
 

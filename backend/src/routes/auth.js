@@ -34,7 +34,10 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({ message: 'User created, profile initialized' });
   } catch (err) {
-    console.error(err);
+    console.error('Register error:', err.message || err);
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ error: err.message });
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -86,7 +89,7 @@ router.get('/me', async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'roomiez-secret-please-change');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'roomiez-secret-please-change-in-env');
     const user = await User.findById(decoded.userId).select('-passwordHash');
 
     if (!user) {
