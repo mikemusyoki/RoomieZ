@@ -3,15 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { Users, Heart, MessageCircle, ClipboardList, RefreshCw, LogOut, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { useTheme } from '../context/ThemeContext';
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { theme, cycleTheme, colors } = useTheme();
   const [activeTab, setActiveTab] = useState('users');
   const [stats, setStats] = useState({ users: 0, matches: 0, messages: 0, questionnaires: 0 });
   const [users, setUsers] = useState([]);
   const [matches, setMatches] = useState([]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const themeIcon = theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : '🔲';
+  const themeLabel = theme === 'light' ? 'Light mode' : theme === 'dark' ? 'Dark mode' : 'High contrast mode';
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -52,26 +57,80 @@ const Admin = () => {
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
 
+  const styles = {
+    adminNav: { background: colors.adminNavBg, borderBottom: `3px solid ${colors.adminNavBorder}`, position: 'sticky', top: 0, zIndex: 100 },
+    adminNavContainer: { maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '60px' },
+    adminNavLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
+    adminNavTitle: { color: colors.adminNavText, fontSize: '18px', fontWeight: '700' },
+    logoutBtn: { display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'transparent', border: `1px solid ${colors.adminLogoutBorder}`, color: colors.adminLogoutText, borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
+    themeToggle: {
+      background: 'transparent',
+      border: `1px solid ${colors.adminLogoutBorder}`,
+      borderRadius: '8px',
+      padding: '6px 10px',
+      cursor: 'pointer',
+      fontSize: '18px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: '36px',
+      height: '36px',
+    },
+    refreshBtn: { display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: colors.sage, color: colors.textOnSage, border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' },
+    statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '30px' },
+    statCard: { background: colors.bgCard, padding: '24px', borderRadius: '12px', boxShadow: colors.shadowMedium, display: 'flex', alignItems: 'center', gap: '16px', border: theme === 'high-contrast' ? `2px solid ${colors.border}` : 'none' },
+    statIcon: { width: '50px', height: '50px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    tabs: { display: 'flex', gap: '4px', marginBottom: '20px', background: colors.bgCard, padding: '4px', borderRadius: '10px', boxShadow: colors.shadowMedium, border: theme === 'high-contrast' ? `2px solid ${colors.border}` : 'none' },
+    tab: { flex: 1, padding: '12px', background: 'transparent', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', color: colors.textSecondary, transition: 'all 0.2s' },
+    activeTab: { background: colors.coral, color: colors.textOnCoral },
+    tableContainer: { background: colors.bgCard, borderRadius: '12px', boxShadow: colors.shadowMedium, overflow: 'auto', border: theme === 'high-contrast' ? `2px solid ${colors.border}` : 'none' },
+    table: { width: '100%', borderCollapse: 'collapse' },
+    th: { textAlign: 'left', padding: '14px 16px', fontSize: '12px', fontWeight: '700', color: colors.textMuted, textTransform: 'uppercase', borderBottom: `2px solid ${colors.borderLighter}`, whiteSpace: 'nowrap' },
+    tr: { borderBottom: `1px solid ${colors.borderLighter}` },
+    td: { padding: '14px 16px', fontSize: '14px', color: colors.textPrimary },
+    badge: { padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' },
+  };
+
+  const StatCard = ({ icon, label, value, color }) => (
+    <div style={styles.statCard}>
+      <div style={{ ...styles.statIcon, background: `${color}15`, color }}>{icon}</div>
+      <div>
+        <p style={{ margin: 0, fontSize: '28px', fontWeight: '700', color: colors.textPrimary }}>{value}</p>
+        <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: colors.textMuted }}>{label}</p>
+      </div>
+    </div>
+  );
+
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <div style={{ minHeight: '100vh', background: colors.bgSecondary }}>
       {/* Admin-only header - no regular navbar */}
       <nav style={styles.adminNav}>
         <div style={styles.adminNavContainer}>
           <div style={styles.adminNavLeft}>
-            <Shield size={22} color="#FF6B6B" />
+            <Shield size={22} color={colors.coral} />
             <span style={styles.adminNavTitle}>RoomieZ Admin</span>
           </div>
-          <button onClick={handleLogout} style={styles.logoutBtn}>
-            <LogOut size={16} /> Logout
-          </button>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <button
+              style={styles.themeToggle}
+              onClick={cycleTheme}
+              aria-label={`Current theme: ${themeLabel}. Click to switch theme.`}
+              title={`Theme: ${themeLabel}`}
+            >
+              {themeIcon}
+            </button>
+            <button onClick={handleLogout} style={styles.logoutBtn}>
+              <LogOut size={16} /> Logout
+            </button>
+          </div>
         </div>
       </nav>
 
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '30px 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
           <div>
-            <h1 style={{ margin: '0 0 5px 0', fontSize: '28px', fontWeight: '700', color: '#1a1a1a' }}>Admin Dashboard</h1>
-            <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>Manage all RoomieZ users, matches, and messages</p>
+            <h1 style={{ margin: '0 0 5px 0', fontSize: '28px', fontWeight: '700', color: colors.textPrimary }}>Admin Dashboard</h1>
+            <p style={{ margin: 0, color: colors.textSecondary, fontSize: '14px' }}>Manage all RoomieZ users, matches, and messages</p>
           </div>
           <button onClick={loadAll} style={styles.refreshBtn}>
             <RefreshCw size={16} /> Refresh
@@ -80,10 +139,10 @@ const Admin = () => {
 
         {/* Stats Cards */}
         <div style={styles.statsGrid}>
-          <StatCard icon={<Users size={24} />} label="Total Users" value={stats.users} color="#FF6B6B" />
-          <StatCard icon={<ClipboardList size={24} />} label="Questionnaires" value={stats.questionnaires} color="#4A7C7E" />
-          <StatCard icon={<Heart size={24} />} label="Matches" value={stats.matches} color="#FF6B6B" />
-          <StatCard icon={<MessageCircle size={24} />} label="Messages" value={stats.messages} color="#4A7C7E" />
+          <StatCard icon={<Users size={24} />} label="Total Users" value={stats.users} color={colors.coral} />
+          <StatCard icon={<ClipboardList size={24} />} label="Questionnaires" value={stats.questionnaires} color={colors.sage} />
+          <StatCard icon={<Heart size={24} />} label="Matches" value={stats.matches} color={colors.coral} />
+          <StatCard icon={<MessageCircle size={24} />} label="Messages" value={stats.messages} color={colors.sage} />
         </div>
 
         {/* Tabs */}
@@ -99,7 +158,7 @@ const Admin = () => {
         {/* Content */}
         <div style={styles.tableContainer}>
           {loading ? (
-            <p style={{ padding: '40px', textAlign: 'center', color: '#999' }}>Loading...</p>
+            <p style={{ padding: '40px', textAlign: 'center', color: colors.textMuted }}>Loading...</p>
           ) : activeTab === 'users' ? (
             <table style={styles.table}>
               <thead>
@@ -120,7 +179,7 @@ const Admin = () => {
                     <td style={styles.td}>{u.profile ? `KSh ${u.profile.budgetMin}-${u.profile.budgetMax}` : '—'}</td>
                     <td style={styles.td}>{u.profile?.roomType || '—'}</td>
                     <td style={styles.td}>
-                      <span style={{ ...styles.badge, background: u.hasQuestionnaire ? '#e8f5e9' : '#fce4ec', color: u.hasQuestionnaire ? '#2e7d32' : '#c62828' }}>
+                      <span style={{ ...styles.badge, background: u.hasQuestionnaire ? colors.badgeSuccess : colors.badgeDanger, color: u.hasQuestionnaire ? colors.badgeSuccessText : colors.badgeDangerText }}>
                         {u.hasQuestionnaire ? '✅ Done' : '❌ No'}
                       </span>
                     </td>
@@ -128,7 +187,7 @@ const Admin = () => {
                   </tr>
                 ))}
                 {users.length === 0 && (
-                  <tr><td colSpan="6" style={{ ...styles.td, textAlign: 'center', color: '#999' }}>No users found</td></tr>
+                  <tr><td colSpan="6" style={{ ...styles.td, textAlign: 'center', color: colors.textMuted }}>No users found</td></tr>
                 )}
               </tbody>
             </table>
@@ -149,7 +208,7 @@ const Admin = () => {
                     <td style={styles.td}>{m.users?.[0]?.email || '—'}</td>
                     <td style={styles.td}>{m.users?.[1]?.email || '—'}</td>
                     <td style={styles.td}>
-                      <span style={{ ...styles.badge, background: m.status === 'matched' ? '#e8f5e9' : '#fff3e0', color: m.status === 'matched' ? '#2e7d32' : '#e65100' }}>
+                      <span style={{ ...styles.badge, background: m.status === 'matched' ? colors.badgeSuccess : colors.badgeWarning, color: m.status === 'matched' ? colors.badgeSuccessText : colors.badgeWarningText }}>
                         {m.status}
                       </span>
                     </td>
@@ -158,7 +217,7 @@ const Admin = () => {
                   </tr>
                 ))}
                 {matches.length === 0 && (
-                  <tr><td colSpan="5" style={{ ...styles.td, textAlign: 'center', color: '#999' }}>No matches found</td></tr>
+                  <tr><td colSpan="5" style={{ ...styles.td, textAlign: 'center', color: colors.textMuted }}>No matches found</td></tr>
                 )}
               </tbody>
             </table>
@@ -182,7 +241,7 @@ const Admin = () => {
                   </tr>
                 ))}
                 {messages.length === 0 && (
-                  <tr><td colSpan="4" style={{ ...styles.td, textAlign: 'center', color: '#999' }}>No messages found</td></tr>
+                  <tr><td colSpan="4" style={{ ...styles.td, textAlign: 'center', color: colors.textMuted }}>No messages found</td></tr>
                 )}
               </tbody>
             </table>
@@ -191,37 +250,6 @@ const Admin = () => {
       </main>
     </div>
   );
-};
-
-const StatCard = ({ icon, label, value, color }) => (
-  <div style={styles.statCard}>
-    <div style={{ ...styles.statIcon, background: `${color}15`, color }}>{icon}</div>
-    <div>
-      <p style={{ margin: 0, fontSize: '28px', fontWeight: '700', color: '#1a1a1a' }}>{value}</p>
-      <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#999' }}>{label}</p>
-    </div>
-  </div>
-);
-
-const styles = {
-  adminNav: { background: '#1a1a1a', borderBottom: '3px solid #FF6B6B', position: 'sticky', top: 0, zIndex: 100 },
-  adminNavContainer: { maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '60px' },
-  adminNavLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
-  adminNavTitle: { color: 'white', fontSize: '18px', fontWeight: '700' },
-  logoutBtn: { display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'transparent', border: '1px solid #555', color: '#ccc', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
-  refreshBtn: { display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#4A7C7E', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' },
-  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '30px' },
-  statCard: { background: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: '16px' },
-  statIcon: { width: '50px', height: '50px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  tabs: { display: 'flex', gap: '4px', marginBottom: '20px', background: 'white', padding: '4px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  tab: { flex: 1, padding: '12px', background: 'transparent', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', color: '#666', transition: 'all 0.2s' },
-  activeTab: { background: '#FF6B6B', color: 'white' },
-  tableContainer: { background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', overflow: 'auto' },
-  table: { width: '100%', borderCollapse: 'collapse' },
-  th: { textAlign: 'left', padding: '14px 16px', fontSize: '12px', fontWeight: '700', color: '#999', textTransform: 'uppercase', borderBottom: '2px solid #f0f0f0', whiteSpace: 'nowrap' },
-  tr: { borderBottom: '1px solid #f5f5f5' },
-  td: { padding: '14px 16px', fontSize: '14px', color: '#333' },
-  badge: { padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' },
 };
 
 export default Admin;

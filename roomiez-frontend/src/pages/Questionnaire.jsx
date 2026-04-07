@@ -6,6 +6,7 @@ import QuestionCard from "../components/QuestionCard";
 import TipBox from "../components/TipBox";
 import api from "../api/axios";
 import toast from "react-hot-toast";
+import { useTheme } from "../context/ThemeContext";
 
 const questions = [
   {

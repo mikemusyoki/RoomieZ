@@ -1,9 +1,50 @@
+/* ===== LIGHT THEME (default) ===== */
 :root {
   --primary-coral: #FF6F61;
   --bg-cream: #FFFDF5;
   --sage-green: #88B04B;
   --text-dark: #2D2926;
   --soft-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  /* Extended palette for theme support */
+  --bg-primary: #FFFDF5;
+  --bg-secondary: #f5f5f5;
+  --bg-card: #ffffff;
+  --text-primary: #1A1A1A;
+  --text-secondary: #666666;
+  --border-color: #E5E7EB;
+}
+
+/* ===== DARK THEME ===== */
+[data-theme="dark"] {
+  --primary-coral: #FF6B6B;
+  --bg-cream: #1a1a2e;
+  --sage-green: #5A9CA0;
+  --text-dark: #E8E8E8;
+  --soft-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-card: #1f2940;
+  --text-primary: #E8E8E8;
+  --text-secondary: #A0A0B0;
+  --border-color: #2D3748;
+}
+
+/* ===== HIGH CONTRAST THEME ===== */
+[data-theme="high-contrast"] {
+  --primary-coral: #FF4444;
+  --bg-cream: #000000;
+  --sage-green: #00FFFF;
+  --text-dark: #FFFFFF;
+  --soft-shadow: none;
+
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-card: #000000;
+  --text-primary: #FFFFFF;
+  --text-secondary: #FFFF00;
+  --border-color: #FFFFFF;
 }
 
 body {
@@ -24,13 +65,23 @@ body {
   transition: transform 0.2s ease;
 }
 
+[data-theme="high-contrast"] .btn-primary {
+  color: #000000;
+  border: 2px solid #FFFFFF;
+  font-weight: 700;
+}
+
 .btn-primary:hover {
   transform: scale(1.05);
 }
 
 .card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   box-shadow: var(--soft-shadow);
   padding: 20px;
+}
+
+[data-theme="high-contrast"] .card {
+  border: 2px solid #FFFFFF;
 }

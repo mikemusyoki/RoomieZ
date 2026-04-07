@@ -1,11 +1,13 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "null");
+  const { theme, cycleTheme, colors } = useTheme();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -14,6 +16,115 @@ const Navbar = () => {
   };
 
   const isActive = (path) => location.pathname === path;
+
+  const themeIcon = theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : '🔲';
+  const themeLabel = theme === 'light' ? 'Light mode' : theme === 'dark' ? 'Dark mode' : 'High contrast mode';
+
+  const styles = {
+    nav: {
+      position: "sticky",
+      top: 0,
+      background: colors.bgCard,
+      borderBottom: `1px solid ${colors.border}`,
+      zIndex: 100,
+      boxShadow: colors.shadowSmall,
+    },
+    container: {
+      maxWidth: "1200px",
+      margin: "0 auto",
+      padding: "0 20px",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      height: "70px",
+    },
+    logo: {
+      fontWeight: "800",
+      fontSize: "20px",
+      cursor: "pointer",
+      color: colors.textPrimary,
+      background: "none",
+      border: "none",
+      padding: "8px 12px",
+      borderRadius: "6px",
+    },
+    links: {
+      display: "flex",
+      gap: "8px",
+      flex: 1,
+      marginLeft: "40px",
+    },
+    link: {
+      color: colors.textSecondary,
+      background: "none",
+      border: "none",
+      fontSize: "14px",
+      fontWeight: "500",
+      cursor: "pointer",
+      padding: "8px 14px",
+      borderRadius: "6px",
+      transition: "all 0.2s",
+    },
+    activeLink: {
+      color: colors.coral,
+      background: colors.coralLight,
+      fontWeight: "600",
+    },
+    actions: {
+      display: "flex",
+      gap: "12px",
+      alignItems: "center",
+    },
+    userArea: {
+      display: "flex",
+      gap: "12px",
+      alignItems: "center",
+    },
+    userEmail: {
+      fontSize: "13px",
+      color: colors.textMuted,
+      maxWidth: "150px",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+    btnSecondary: {
+      background: "transparent",
+      border: `2px solid ${colors.border}`,
+      color: colors.textPrimary,
+      padding: "8px 20px",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontWeight: "600",
+      fontSize: "14px",
+      transition: "all 0.3s",
+    },
+    btnPrimary: {
+      background: colors.coral,
+      border: "none",
+      color: colors.textOnCoral,
+      padding: "8px 20px",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontWeight: "600",
+      fontSize: "14px",
+      transition: "all 0.3s",
+    },
+    themeToggle: {
+      background: colors.bgCardHover,
+      border: `1px solid ${colors.border}`,
+      borderRadius: "8px",
+      padding: "6px 10px",
+      cursor: "pointer",
+      fontSize: "18px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      transition: "all 0.2s",
+      minWidth: "36px",
+      height: "36px",
+    },
+  };
 
   return (
     <nav style={styles.nav} aria-label="Main navigation">
@@ -66,6 +177,15 @@ const Navbar = () => {
         </div>
 
         <div style={styles.actions}>
+          <button
+            style={styles.themeToggle}
+            onClick={cycleTheme}
+            aria-label={`Current theme: ${themeLabel}. Click to switch theme.`}
+            title={`Theme: ${themeLabel}`}
+          >
+            {themeIcon}
+          </button>
+
           {token ? (
             <div style={styles.userArea}>
               <span style={styles.userEmail}>{user?.email}</span>
@@ -93,98 +213,6 @@ const Navbar = () => {
       </div>
     </nav>
   );
-};
-
-const styles = {
-  nav: {
-    position: "sticky",
-    top: 0,
-    background: "white",
-    borderBottom: "1px solid #E5E7EB",
-    zIndex: 100,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-  },
-  container: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "0 20px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: "70px",
-  },
-  logo: {
-    fontWeight: "800",
-    fontSize: "20px",
-    cursor: "pointer",
-    color: "#1A1A1A",
-    background: "none",
-    border: "none",
-    padding: "8px 12px",
-    borderRadius: "6px",
-  },
-  links: {
-    display: "flex",
-    gap: "8px",
-    flex: 1,
-    marginLeft: "40px",
-  },
-  link: {
-    color: "#666666",
-    background: "none",
-    border: "none",
-    fontSize: "14px",
-    fontWeight: "500",
-    cursor: "pointer",
-    padding: "8px 14px",
-    borderRadius: "6px",
-    transition: "all 0.2s",
-  },
-  activeLink: {
-    color: "#FF6B6B",
-    background: "#FFF0F0",
-    fontWeight: "600",
-  },
-  actions: {
-    display: "flex",
-    gap: "12px",
-    alignItems: "center",
-  },
-  userArea: {
-    display: "flex",
-    gap: "12px",
-    alignItems: "center",
-  },
-  userEmail: {
-    fontSize: "13px",
-    color: "#999",
-    maxWidth: "150px",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  },
-  btnSecondary: {
-    background: "transparent",
-    border: "2px solid #E5E7EB",
-    color: "#1A1A1A",
-    padding: "8px 20px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "14px",
-    transition: "all 0.3s",
-  },
-  btnPrimary: {
-    background: "#FF6B6B",
-    border: "none",
-    color: "white",
-    padding: "8px 20px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "14px",
-    transition: "all 0.3s",
-  },
 };
 
 export default Navbar;

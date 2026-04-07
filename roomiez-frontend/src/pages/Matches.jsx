@@ -4,9 +4,11 @@ import { Heart, MessageCircle, Search } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { useTheme } from '../context/ThemeContext';
 
 const Matches = () => {
   const navigate = useNavigate();
+  const { colors } = useTheme();
   const [allMatches, setAllMatches] = useState([]);
   const [filteredMatches, setFilteredMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -103,12 +105,37 @@ const Matches = () => {
   const startIdx = (currentPage - 1) * matchesPerPage;
   const displayedMatches = filteredMatches.slice(startIdx, startIdx + matchesPerPage);
 
+  const styles = {
+    sidebar: { width: '250px', background: colors.bgCard, padding: '30px 20px', borderRight: `1px solid ${colors.borderLight}`, minHeight: 'calc(100vh - 70px)' },
+    filterSection: { display: 'flex', flexDirection: 'column', gap: '25px' },
+    filterHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+    filterGroup: { display: 'flex', flexDirection: 'column', gap: '10px' },
+    filterLabel: { fontSize: '12px', fontWeight: '600', color: colors.textPrimary, textTransform: 'uppercase' },
+    slider: { width: '100%', cursor: 'pointer' },
+    budgetDisplay: { display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: colors.textSecondary },
+    mainContent: { flex: 1, padding: '30px' },
+    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' },
+    sortSelect: { padding: '8px 12px', border: `1px solid ${colors.borderLight}`, borderRadius: '6px', cursor: 'pointer', fontSize: '14px', background: colors.bgCard, color: colors.textPrimary },
+    matchesGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', marginBottom: '40px' },
+    matchCard: { background: colors.bgCard, borderRadius: '12px', overflow: 'hidden', boxShadow: colors.shadowMedium, transition: 'all 0.3s', border: colors.theme === 'high-contrast' ? `2px solid ${colors.border}` : 'none' },
+    cardImageContainer: { position: 'relative', width: '100%', paddingBottom: '70%', background: colors.bgTertiary, overflow: 'hidden' },
+    compatibilityBadge: { position: 'absolute', top: '12px', right: '12px', background: `${colors.sage}f2`, color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', zIndex: 1 },
+    matchedBadge: { position: 'absolute', top: '12px', left: '12px', background: `${colors.coral}f2`, color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', zIndex: 1 },
+    cardContent: { padding: '16px' },
+    budget: { margin: '10px 0', paddingTop: '10px', borderTop: `1px solid ${colors.borderLighter}` },
+    actionButtons: { display: 'flex', gap: '8px', marginTop: '12px' },
+    actionBtn: { flex: 1, padding: '8px 12px', border: '1px solid', borderRadius: '6px', background: colors.bgCard, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600', fontSize: '12px' },
+    messageBtn: { flex: 1, padding: '8px 12px', color: 'white', border: 'none', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600', fontSize: '12px' },
+    pagination: { display: 'flex', justifyContent: 'center', gap: '8px', padding: '20px' },
+    pageButton: { padding: '8px 12px', border: `1px solid ${colors.borderLight}`, borderRadius: '6px', cursor: 'pointer', fontWeight: '600' },
+  };
+
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+      <div style={{ minHeight: '100vh', background: colors.bgSecondary }}>
         <Navbar />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-          <p>Finding your perfect matches...</p>
+          <p style={{ color: colors.textSecondary }}>Finding your perfect matches...</p>
         </div>
       </div>
     );
@@ -116,12 +143,12 @@ const Matches = () => {
 
   if (error === 'complete-questionnaire') {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+      <div style={{ minHeight: '100vh', background: colors.bgSecondary }}>
         <Navbar />
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '400px', gap: '20px' }}>
-          <p style={{ fontSize: '18px', color: '#666' }}>Please complete your profile and questionnaire first.</p>
+          <p style={{ fontSize: '18px', color: colors.textSecondary }}>Please complete your profile and questionnaire first.</p>
           <button onClick={() => navigate('/questionnaire')}
-            style={{ padding: '12px 32px', background: '#FF6B6B', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }}>
+            style={{ padding: '12px 32px', background: colors.coral, color: colors.textOnCoral, border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }}>
             Complete Questionnaire
           </button>
         </div>
@@ -131,25 +158,25 @@ const Matches = () => {
 
   if (error) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+      <div style={{ minHeight: '100vh', background: colors.bgSecondary }}>
         <Navbar />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-          <p style={{ color: '#FF6B6B' }}>{error}</p>
+          <p style={{ color: colors.coral }}>{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <div style={{ minHeight: '100vh', background: colors.bgSecondary }}>
       <Navbar />
       <main id="main-content" role="main">
         <div style={{ display: 'flex', maxWidth: '1600px', margin: '0 auto' }}>
           <aside style={styles.sidebar}>
             <div style={styles.filterSection}>
               <div style={styles.filterHeader}>
-                <h2 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>Filters</h2>
-                <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer', fontSize: '14px', fontWeight: '600' }}>
+                <h2 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: colors.textPrimary }}>Filters</h2>
+                <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: colors.coral, cursor: 'pointer', fontSize: '14px', fontWeight: '600' }}>
                   Reset
                 </button>
               </div>
@@ -170,8 +197,8 @@ const Matches = () => {
           <div style={styles.mainContent}>
             <div style={styles.header}>
               <div>
-                <h1 style={{ margin: '0 0 5px 0', fontSize: '24px', fontWeight: '700' }}>Suggested Roommates</h1>
-                <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+                <h1 style={{ margin: '0 0 5px 0', fontSize: '24px', fontWeight: '700', color: colors.textPrimary }}>Suggested Roommates</h1>
+                <p style={{ margin: 0, color: colors.textSecondary, fontSize: '14px' }}>
                   {filteredMatches.length} potential roommates • Like profiles to match & chat
                 </p>
               </div>
@@ -183,7 +210,7 @@ const Matches = () => {
 
             {displayedMatches.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-                <p style={{ fontSize: '16px', color: '#666' }}>No matches found yet. Invite friends to join RoomieZ!</p>
+                <p style={{ fontSize: '16px', color: colors.textSecondary }}>No matches found yet. Invite friends to join RoomieZ!</p>
               </div>
             ) : (
               <div style={styles.matchesGrid}>
@@ -194,7 +221,7 @@ const Matches = () => {
                   return (
                     <div key={match.user?._id || idx} style={styles.matchCard}>
                       <div style={styles.cardImageContainer}>
-                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(135deg, #FF6B6B 0%, #4A7C7E 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', fontWeight: '700', color: 'white' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: colors.avatarGradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', fontWeight: '700', color: 'white' }}>
                           {match.profile?.name?.charAt(0)?.toUpperCase() || '?'}
                         </div>
                         <div style={styles.compatibilityBadge}>
@@ -205,26 +232,26 @@ const Matches = () => {
                         )}
                       </div>
                       <div style={styles.cardContent}>
-                        <h3 style={{ margin: '12px 0 0 0', fontSize: '16px', fontWeight: '600' }}>
+                        <h3 style={{ margin: '12px 0 0 0', fontSize: '16px', fontWeight: '600', color: colors.textPrimary }}>
                           {match.profile?.name || 'Unknown'}
                         </h3>
-                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#999' }}>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: colors.textMuted }}>
                           {match.profile?.roomType ? match.profile.roomType.charAt(0).toUpperCase() + match.profile.roomType.slice(1) + ' room' : ''}
                         </p>
                         <div style={styles.budget}>
-                          <span style={{ fontSize: '14px', fontWeight: '600', color: '#FF6B6B' }}>
+                          <span style={{ fontSize: '14px', fontWeight: '600', color: colors.coral }}>
                             KSh {match.profile?.budgetMin || 0} - {match.profile?.budgetMax || 0}/mo
                           </span>
                         </div>
 
                         {/* Like status indicator */}
                         {isLiked && !isMatched && (
-                          <p style={{ margin: '4px 0 8px 0', fontSize: '12px', color: '#FF6B6B', fontStyle: 'italic' }}>
+                          <p style={{ margin: '4px 0 8px 0', fontSize: '12px', color: colors.coral, fontStyle: 'italic' }}>
                             💕 You liked this profile — waiting for them to like back
                           </p>
                         )}
                         {match.theyLiked && !isLiked && (
-                          <p style={{ margin: '4px 0 8px 0', fontSize: '12px', color: '#4A7C7E', fontStyle: 'italic' }}>
+                          <p style={{ margin: '4px 0 8px 0', fontSize: '12px', color: colors.sage, fontStyle: 'italic' }}>
                             👀 This person liked your profile!
                           </p>
                         )}
@@ -235,14 +262,14 @@ const Matches = () => {
                             disabled={isLiked}
                             style={{
                               ...styles.actionBtn,
-                              background: isLiked ? '#FFE8E8' : 'white',
-                              color: isLiked ? '#FF6B6B' : '#999',
-                              borderColor: isLiked ? '#FF6B6B' : '#ddd',
+                              background: isLiked ? colors.coralLighter : colors.bgCard,
+                              color: isLiked ? colors.coral : colors.textMuted,
+                              borderColor: isLiked ? colors.coral : colors.borderLight,
                               cursor: isLiked ? 'default' : 'pointer',
                               opacity: isLiked ? 0.8 : 1,
                             }}
                             aria-label={isLiked ? 'Already liked' : `Like ${match.profile?.name}`}>
-                            <Heart size={16} fill={isLiked ? '#FF6B6B' : 'none'} />
+                            <Heart size={16} fill={isLiked ? colors.coral : 'none'} />
                             {isLiked ? 'Liked' : 'Like'}
                           </button>
                           <button
@@ -250,7 +277,7 @@ const Matches = () => {
                             disabled={!isMatched}
                             style={{
                               ...styles.messageBtn,
-                              background: isMatched ? '#4A7C7E' : '#ccc',
+                              background: isMatched ? colors.sage : colors.borderLight,
                               cursor: isMatched ? 'pointer' : 'not-allowed',
                             }}
                             aria-label={isMatched ? `Chat with ${match.profile?.name}` : 'Both must like to chat'}
@@ -270,7 +297,7 @@ const Matches = () => {
               <div style={styles.pagination}>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <button key={page} onClick={() => setCurrentPage(page)}
-                    style={{ ...styles.pageButton, background: currentPage === page ? '#FF6B6B' : 'white', color: currentPage === page ? 'white' : '#666' }}>
+                    style={{ ...styles.pageButton, background: currentPage === page ? colors.coral : colors.bgCard, color: currentPage === page ? 'white' : colors.textSecondary }}>
                     {page}
                   </button>
                 ))}
@@ -281,31 +308,6 @@ const Matches = () => {
       </main>
     </div>
   );
-};
-
-const styles = {
-  sidebar: { width: '250px', background: 'white', padding: '30px 20px', borderRight: '1px solid #e5e5e5', minHeight: 'calc(100vh - 70px)' },
-  filterSection: { display: 'flex', flexDirection: 'column', gap: '25px' },
-  filterHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  filterGroup: { display: 'flex', flexDirection: 'column', gap: '10px' },
-  filterLabel: { fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' },
-  slider: { width: '100%', cursor: 'pointer' },
-  budgetDisplay: { display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#666' },
-  mainContent: { flex: 1, padding: '30px' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' },
-  sortSelect: { padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' },
-  matchesGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', marginBottom: '40px' },
-  matchCard: { background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.3s' },
-  cardImageContainer: { position: 'relative', width: '100%', paddingBottom: '70%', background: '#f0f0f0', overflow: 'hidden' },
-  compatibilityBadge: { position: 'absolute', top: '12px', right: '12px', background: 'rgba(74, 124, 126, 0.95)', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', zIndex: 1 },
-  matchedBadge: { position: 'absolute', top: '12px', left: '12px', background: 'rgba(255, 107, 107, 0.95)', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', zIndex: 1 },
-  cardContent: { padding: '16px' },
-  budget: { margin: '10px 0', paddingTop: '10px', borderTop: '1px solid #f0f0f0' },
-  actionButtons: { display: 'flex', gap: '8px', marginTop: '12px' },
-  actionBtn: { flex: 1, padding: '8px 12px', border: '1px solid', borderRadius: '6px', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600', fontSize: '12px' },
-  messageBtn: { flex: 1, padding: '8px 12px', color: 'white', border: 'none', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600', fontSize: '12px' },
-  pagination: { display: 'flex', justifyContent: 'center', gap: '8px', padding: '20px' },
-  pageButton: { padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' },
 };
 
 export default Matches;

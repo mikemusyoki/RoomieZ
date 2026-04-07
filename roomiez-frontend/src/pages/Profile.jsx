@@ -4,9 +4,11 @@ import { User, Mail, LogOut, Edit2, Check, X, ArrowLeft, DollarSign, Home } from
 import Navbar from '../components/Navbar';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { useTheme } from '../context/ThemeContext';
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { colors } = useTheme();
   const [userData, setUserData] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [questionnaireData, setQuestionnaireData] = useState(null);
@@ -76,12 +78,50 @@ const Profile = () => {
     navigate('/');
   };
 
+  const styles = {
+    pageContainer: { minHeight: '100vh', background: colors.pageGradient },
+    container: { maxWidth: '800px', margin: '0 auto', padding: '40px 20px' },
+    backButton: { display: 'flex', alignItems: 'center', gap: '8px', background: colors.bgCard, border: `1px solid ${colors.borderLight}`, borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: colors.textSecondary, marginBottom: '20px' },
+    profileCard: { background: colors.bgCard, borderRadius: '16px', padding: '40px', boxShadow: colors.shadow },
+    profileHeader: { display: 'flex', alignItems: 'center', gap: '24px', paddingBottom: '32px', borderBottom: `1px solid ${colors.borderLight}`, marginBottom: '32px' },
+    profileAvatar: { width: '80px', height: '80px', borderRadius: '50%', background: colors.avatarGradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: '700', color: 'white', flexShrink: 0 },
+    editButton: { display: 'flex', alignItems: 'center', gap: '8px', background: colors.coral, color: colors.textOnCoral, border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' },
+    profileDetails: { display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' },
+    editForm: { marginBottom: '32px' },
+    label: { display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: colors.textPrimary },
+    input: { width: '100%', border: `1px solid ${colors.borderLight}`, borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', background: colors.bgInput, color: colors.textPrimary },
+    saveButton: { display: 'flex', alignItems: 'center', gap: '8px', background: colors.sage, color: colors.textOnSage, border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' },
+    cancelButton: { display: 'flex', alignItems: 'center', gap: '8px', background: colors.borderLight, color: colors.textSecondary, border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' },
+    statusBox: { padding: '20px', background: colors.sageLight, border: `1px solid ${colors.sage}`, borderRadius: '12px', marginBottom: '32px' },
+    quickActions: { display: 'flex', flexDirection: 'column', gap: '12px' },
+    actionButton: { padding: '12px 20px', background: colors.bgCard, border: `2px solid ${colors.coral}`, color: colors.coral, borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
+    detailItem: { display: 'flex', gap: '16px', alignItems: 'flex-start', padding: '16px', background: colors.bgCardHover, borderRadius: '12px' },
+  };
+
+  const DetailItem = ({ icon, label, value }) => (
+    <div style={styles.detailItem}>
+      <div style={{ color: colors.coral }}>{icon}</div>
+      <div>
+        <p style={{ margin: '0 0 4px 0', fontSize: '12px', fontWeight: '600', color: colors.textMuted, textTransform: 'uppercase' }}>{label}</p>
+        <p style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: colors.textPrimary }}>{value}</p>
+      </div>
+    </div>
+  );
+
+  const FormField = ({ label, name, value, onChange, type = 'text' }) => (
+    <div style={{ marginBottom: '20px' }}>
+      <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: colors.textPrimary }}>{label}</label>
+      <input type={type} name={name} value={value} onChange={onChange}
+        style={{ width: '100%', padding: '12px', border: `1px solid ${colors.borderLight}`, borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', background: colors.bgInput, color: colors.textPrimary }} />
+    </div>
+  );
+
   if (loading) {
     return (
       <div style={styles.pageContainer}>
         <Navbar />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-          <p>Loading profile...</p>
+          <p style={{ color: colors.textSecondary }}>Loading profile...</p>
         </div>
       </div>
     );
@@ -103,10 +143,10 @@ const Profile = () => {
                 {profileData?.name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
               <div style={{ flex: 1 }}>
-                <h1 style={{ margin: '0 0 8px 0', fontSize: '28px', fontWeight: '700', color: '#1a1a1a' }}>
+                <h1 style={{ margin: '0 0 8px 0', fontSize: '28px', fontWeight: '700', color: colors.textPrimary }}>
                   {profileData?.name || 'Unknown'}
                 </h1>
-                <p style={{ margin: 0, fontSize: '14px', color: '#999' }}>{userData?.email}</p>
+                <p style={{ margin: 0, fontSize: '14px', color: colors.textMuted }}>{userData?.email}</p>
               </div>
               {!isEditing && (
                 <button onClick={() => setIsEditing(true)} style={styles.editButton}>
@@ -149,13 +189,13 @@ const Profile = () => {
 
             {/* Questionnaire Status */}
             <div style={styles.statusBox}>
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '700', color: '#4A7C7E', textTransform: 'uppercase' }}>Questionnaire Status</h3>
-              <p style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#666' }}>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '700', color: colors.sage, textTransform: 'uppercase' }}>Questionnaire Status</h3>
+              <p style={{ margin: '0 0 12px 0', fontSize: '14px', color: colors.textSecondary }}>
                 {questionnaireData ? '✅ Completed' : '❌ Not completed'}
               </p>
               {!questionnaireData && (
                 <button onClick={() => navigate('/questionnaire')}
-                  style={{ padding: '8px 20px', background: '#FF6B6B', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}>
+                  style={{ padding: '8px 20px', background: colors.coral, color: colors.textOnCoral, border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}>
                   Complete Now
                 </button>
               )}
@@ -165,7 +205,7 @@ const Profile = () => {
             <div style={styles.quickActions}>
               <button onClick={() => navigate('/matches')} style={styles.actionButton}>👥 View Matches</button>
               <button onClick={() => navigate('/questionnaire')} style={styles.actionButton}>📋 Update Preferences</button>
-              <button onClick={handleLogout} style={{ ...styles.actionButton, background: '#FFE8E8', borderColor: '#FF6B6B', color: '#FF6B6B' }}>
+              <button onClick={handleLogout} style={{ ...styles.actionButton, background: colors.coralLighter, borderColor: colors.coral, color: colors.coral }}>
                 <LogOut size={18} /> Logout
               </button>
             </div>
@@ -174,43 +214,6 @@ const Profile = () => {
       </main>
     </div>
   );
-};
-
-const DetailItem = ({ icon, label, value }) => (
-  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', padding: '16px', background: '#f9f9f9', borderRadius: '12px' }}>
-    <div style={{ color: '#FF6B6B' }}>{icon}</div>
-    <div>
-      <p style={{ margin: '0 0 4px 0', fontSize: '12px', fontWeight: '600', color: '#999', textTransform: 'uppercase' }}>{label}</p>
-      <p style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#1a1a1a' }}>{value}</p>
-    </div>
-  </div>
-);
-
-const FormField = ({ label, name, value, onChange, type = 'text' }) => (
-  <div style={{ marginBottom: '20px' }}>
-    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#1a1a1a' }}>{label}</label>
-    <input type={type} name={name} value={value} onChange={onChange}
-      style={{ width: '100%', padding: '12px', border: '1px solid #e5e5e5', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-  </div>
-);
-
-const styles = {
-  pageContainer: { minHeight: '100vh', background: 'linear-gradient(135deg, #f5f5f5 0%, #fffdf5 100%)' },
-  container: { maxWidth: '800px', margin: '0 auto', padding: '40px 20px' },
-  backButton: { display: 'flex', alignItems: 'center', gap: '8px', background: 'white', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: '#666', marginBottom: '20px' },
-  profileCard: { background: 'white', borderRadius: '16px', padding: '40px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' },
-  profileHeader: { display: 'flex', alignItems: 'center', gap: '24px', paddingBottom: '32px', borderBottom: '1px solid #e5e5e5', marginBottom: '32px' },
-  profileAvatar: { width: '80px', height: '80px', borderRadius: '50%', background: 'linear-gradient(135deg, #FF6B6B 0%, #4A7C7E 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: '700', color: 'white', flexShrink: 0 },
-  editButton: { display: 'flex', alignItems: 'center', gap: '8px', background: '#FF6B6B', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' },
-  profileDetails: { display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' },
-  editForm: { marginBottom: '32px' },
-  label: { display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#1a1a1a' },
-  input: { width: '100%', border: '1px solid #e5e5e5', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' },
-  saveButton: { display: 'flex', alignItems: 'center', gap: '8px', background: '#4A7C7E', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' },
-  cancelButton: { display: 'flex', alignItems: 'center', gap: '8px', background: '#e5e5e5', color: '#666', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' },
-  statusBox: { padding: '20px', background: '#f0f9f8', border: '1px solid #4A7C7E', borderRadius: '12px', marginBottom: '32px' },
-  quickActions: { display: 'flex', flexDirection: 'column', gap: '12px' },
-  actionButton: { padding: '12px 20px', background: 'white', border: '2px solid #FF6B6B', color: '#FF6B6B', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
 };
 
 export default Profile;

@@ -1,30 +1,32 @@
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
-  background: linear-gradient(135deg, #FFF6F4, #FFFDF5);
+  background: var(--bg-cream, linear-gradient(135deg, #FFF6F4, #FFFDF5));
   min-height: 100vh;
 }
 
 /* QUESTION CARD (GLASS EFFECT) */
 
 .question-card {
-
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--bg-card, rgba(255, 255, 255, 0.65));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
   border-radius: 20px;
-
-  border: 1px solid rgba(255, 255, 255, 0.4);
-
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.4));
   padding: 40px;
-
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.08),
-    inset 0 1px rgba(255, 255, 255, 0.4);
-
+  box-shadow: var(--soft-shadow, 0 10px 35px rgba(0, 0, 0, 0.08));
   transition: all 0.25s ease;
+}
 
+[data-theme="dark"] .question-card {
+  background: rgba(31, 41, 64, 0.85);
+  border: 1px solid #2D3748;
+}
+
+[data-theme="high-contrast"] .question-card {
+  background: #000000;
+  border: 2px solid #FFFFFF;
+  backdrop-filter: none;
 }
 
 .question-card:hover {
@@ -32,20 +34,36 @@ body {
 }
 
 .category-tag {
-  background: #FFE8E6;
+  background: var(--primary-coral, #FF6F61);
   padding: 6px 12px;
   border-radius: 12px;
   font-size: 12px;
-  color: #FF6F61;
+  color: white;
+  opacity: 0.85;
+}
+
+[data-theme="high-contrast"] .category-tag {
+  color: #000000;
+  opacity: 1;
+  border: 1px solid #FFFFFF;
 }
 
 .question-title {
   margin-top: 10px;
   min-height: 40px;
+  color: var(--text-dark, #333);
 }
 
 .question-subtitle {
-  color: #777;
+  color: var(--gray-text, #777);
+}
+
+[data-theme="dark"] .question-subtitle {
+  color: #A0A0B0;
+}
+
+[data-theme="high-contrast"] .question-subtitle {
+  color: #FFFF00;
 }
 
 .options-grid {
@@ -64,9 +82,14 @@ body {
   cursor: pointer;
   width: 200px;
   text-align: center;
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--bg-card, white);
+  border: 1px solid var(--border-color, #ddd);
+  color: var(--text-dark, #333);
   transition: all .2s ease;
+}
+
+[data-theme="high-contrast"] .option-card {
+  border: 2px solid #FFFFFF;
 }
 
 .option-card:hover {
@@ -74,11 +97,30 @@ body {
   box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
 }
 
+[data-theme="dark"] .option-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .3);
+}
+
+[data-theme="high-contrast"] .option-card:hover {
+  box-shadow: none;
+  border-color: #FFFF00;
+}
+
 .option-selected {
-  border: 2px solid #FF6F61;
-  background: #FFF4F2;
+  border: 2px solid var(--primary-coral, #FF6F61);
+  background: var(--bg-card, #FFF4F2);
   transform: scale(1.06);
   box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+}
+
+[data-theme="dark"] .option-selected {
+  background: #3D2030;
+}
+
+[data-theme="high-contrast"] .option-selected {
+  border: 3px solid #FF4444;
+  background: #330000;
+  box-shadow: none;
 }
 
 /* PROGRESS BAR */
@@ -89,9 +131,13 @@ body {
 
 .progress-bar {
   height: 8px;
-  background: #eee;
+  background: var(--border-color, #eee);
   border-radius: 10px;
   margin-top: 6px;
+}
+
+[data-theme="high-contrast"] .progress-bar {
+  border: 1px solid #FFFFFF;
 }
 
 .progress-fill {
@@ -108,6 +154,17 @@ body {
   background: #FFF5E8;
   border-radius: 10px;
   font-size: 14px;
+  color: var(--text-dark, #333);
+}
+
+[data-theme="dark"] .tip-box {
+  background: #2a2a1e;
+}
+
+[data-theme="high-contrast"] .tip-box {
+  background: #1a1a00;
+  border: 2px solid #FFFF00;
+  color: #FFFF00;
 }
 
 /* BUTTONS */
@@ -118,13 +175,28 @@ body {
   justify-content: space-between;
 }
 
+.button-row > button:first-child {
+  background: var(--bg-card, white);
+  border: 1px solid var(--border-color, #ddd);
+  color: var(--text-dark, #333);
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 .primary-button {
-  background: #FF6F61;
+  background: var(--primary-coral, #FF6F61);
   color: white;
   border: none;
   padding: 10px 18px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+[data-theme="high-contrast"] .primary-button {
+  color: #000000;
+  border: 2px solid #FFFFFF;
+  font-weight: 700;
 }
 
 .primary-button:disabled {

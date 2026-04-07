@@ -4,9 +4,11 @@ import { Mail, Lock, User, EyeOff, Eye } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import toast from 'react-hot-toast';
 import api from '../api/axios';
+import { useTheme } from '../context/ThemeContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { colors } = useTheme();
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -119,6 +121,34 @@ const Login = () => {
     setShowConfirmPassword(false);
   };
 
+  const styles = {
+    pageContainer: { minHeight: '100vh', background: colors.pageGradient },
+    container: { display: 'flex', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)', alignItems: 'stretch' },
+    formWrapper: { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 50px', background: colors.bgCard, boxShadow: `-2px 0 8px ${colors.shadow === 'none' ? 'transparent' : 'rgba(0,0,0,0.05)'}` },
+    header: { marginBottom: '40px', textAlign: 'center' },
+    title: { margin: '0 0 12px 0', fontSize: '32px', fontWeight: '700', color: colors.textPrimary },
+    subtitle: { margin: 0, fontSize: '14px', color: colors.textSecondary, fontWeight: '500' },
+    formGroup: { marginBottom: '24px' },
+    label: { display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: colors.textPrimary },
+    inputWrapper: { position: 'relative', display: 'flex', alignItems: 'center' },
+    inputIcon: { position: 'absolute', left: '16px', color: colors.textMuted, pointerEvents: 'none' },
+    input: { width: '100%', padding: '12px 12px 12px 48px', border: `1px solid ${colors.borderLight}`, borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', outline: 'none', background: colors.bgInput, color: colors.textPrimary },
+    eyeButton: { position: 'absolute', right: '12px', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center' },
+    submitButton: { width: '100%', padding: '12px 24px', background: colors.coral, color: colors.textOnCoral, border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', marginBottom: '24px', transition: 'all 0.3s' },
+    toggleSection: { textAlign: 'center', marginBottom: '20px' },
+    toggleText: { margin: 0, fontSize: '14px', color: colors.textSecondary },
+    toggleButton: { background: 'none', border: 'none', color: colors.coral, cursor: 'pointer', fontWeight: '600', padding: '4px 0' },
+    infoSection: { flex: 1, background: `linear-gradient(135deg, ${colors.coral} 0%, ${colors.sage} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 50px', color: 'white' },
+    infoContent: { maxWidth: '400px' },
+    infoTitle: { margin: '0 0 40px 0', fontSize: '28px', fontWeight: '700', lineHeight: '1.3' },
+    featureList: { marginBottom: '40px' },
+    feature: { display: 'flex', gap: '16px', marginBottom: '24px', alignItems: 'flex-start' },
+    featureIcon: { fontSize: '24px', minWidth: '32px', textAlign: 'center' },
+    featureTitle: { margin: '0 0 4px 0', fontSize: '16px', fontWeight: '600' },
+    featureDesc: { margin: 0, fontSize: '13px', opacity: 0.9, lineHeight: '1.4' },
+    infoFooter: { margin: 0, fontSize: '14px', opacity: 0.8, textAlign: 'center', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.2)' },
+  };
+
   return (
     <div style={styles.pageContainer}>
       <Navbar />
@@ -179,7 +209,7 @@ const Login = () => {
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
                     style={styles.eyeButton} aria-label={showPassword ? 'Hide password' : 'Show password'}>
-                    {showPassword ? <EyeOff size={18} color="#999" /> : <Eye size={18} color="#999" />}
+                    {showPassword ? <EyeOff size={18} color={colors.textMuted} /> : <Eye size={18} color={colors.textMuted} />}
                   </button>
                 </div>
               </div>
@@ -197,7 +227,7 @@ const Login = () => {
                     />
                     <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       style={styles.eyeButton}>
-                      {showConfirmPassword ? <EyeOff size={18} color="#999" /> : <Eye size={18} color="#999" />}
+                      {showConfirmPassword ? <EyeOff size={18} color={colors.textMuted} /> : <Eye size={18} color={colors.textMuted} />}
                     </button>
                   </div>
                 </div>
@@ -244,34 +274,6 @@ const Login = () => {
       </main>
     </div>
   );
-};
-
-const styles = {
-  pageContainer: { minHeight: '100vh', background: 'linear-gradient(135deg, #f5f5f5 0%, #fffdf5 100%)' },
-  container: { display: 'flex', maxWidth: '1400px', margin: '0 auto', minHeight: 'calc(100vh - 70px)', alignItems: 'stretch' },
-  formWrapper: { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 50px', background: 'white', boxShadow: '-2px 0 8px rgba(0,0,0,0.05)' },
-  header: { marginBottom: '40px', textAlign: 'center' },
-  title: { margin: '0 0 12px 0', fontSize: '32px', fontWeight: '700', color: '#1a1a1a' },
-  subtitle: { margin: 0, fontSize: '14px', color: '#666', fontWeight: '500' },
-  formGroup: { marginBottom: '24px' },
-  label: { display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#1a1a1a' },
-  inputWrapper: { position: 'relative', display: 'flex', alignItems: 'center' },
-  inputIcon: { position: 'absolute', left: '16px', color: '#999', pointerEvents: 'none' },
-  input: { width: '100%', padding: '12px 12px 12px 48px', border: '1px solid #e5e5e5', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', outline: 'none' },
-  eyeButton: { position: 'absolute', right: '12px', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center' },
-  submitButton: { width: '100%', padding: '12px 24px', background: '#FF6B6B', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', marginBottom: '24px', transition: 'all 0.3s' },
-  toggleSection: { textAlign: 'center', marginBottom: '20px' },
-  toggleText: { margin: 0, fontSize: '14px', color: '#666' },
-  toggleButton: { background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer', fontWeight: '600', padding: '4px 0' },
-  infoSection: { flex: 1, background: 'linear-gradient(135deg, #FF6B6B 0%, #4A7C7E 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 50px', color: 'white' },
-  infoContent: { maxWidth: '400px' },
-  infoTitle: { margin: '0 0 40px 0', fontSize: '28px', fontWeight: '700', lineHeight: '1.3' },
-  featureList: { marginBottom: '40px' },
-  feature: { display: 'flex', gap: '16px', marginBottom: '24px', alignItems: 'flex-start' },
-  featureIcon: { fontSize: '24px', minWidth: '32px', textAlign: 'center' },
-  featureTitle: { margin: '0 0 4px 0', fontSize: '16px', fontWeight: '600' },
-  featureDesc: { margin: 0, fontSize: '13px', opacity: 0.9, lineHeight: '1.4' },
-  infoFooter: { margin: 0, fontSize: '14px', opacity: 0.8, textAlign: 'center', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.2)' },
 };
 
 export default Login;
